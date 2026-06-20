@@ -42,9 +42,9 @@ Material:
     - _Amplitude: 0.052
     - _Culltype: 1
     - _Frequency: 6.72
-    - _OutlineThickness: 0.03
+    - _OutlineThickness: 0.0106
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0.22641504, g: 0.22641504, b: 0.22641504, a: 0.4117647}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
