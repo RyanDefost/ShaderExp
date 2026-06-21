@@ -65,19 +65,22 @@ Shader "Custom/ScreenDistortion"
             {
                 float2 newUV = IN.uv * 2 - 1;
                 
+                //Create circle on screen
                 float len = length(newUV);
                 float cirlce = (len + _CircleSIze - 1);
                 float inverseCircle = 1 - cirlce;
                 float fullCircle = cirlce * inverseCircle;
                 
-                
+                //Offset UV to warp inwards
                 float2 noiseUV = IN.uv * 2 - 1;
                 noiseUV += _Time.y * 0.1 + (len - IN.uv);
                 
+                //create noise based on given texture
                 half4 noise = tex2D(_BaseMap, noiseUV * _CutOff);
                 float filterdNoise = step(-fullCircle, noise);
                 half4 color = _BaseColor - filterdNoise;
                 
+                //Apply noise on outside of circle
                 color.a = clamp((color.a), 0, _BaseColor.a * len * _TaperDistance);
                 return color * noise;
             }

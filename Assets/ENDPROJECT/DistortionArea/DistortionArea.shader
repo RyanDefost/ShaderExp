@@ -5,8 +5,10 @@ Shader "Custom/DistortionArea"
         _Color("Color", Color) = (1,1,1,1)
         _Texture("Texture", 2D) = "White" {}
     
+        _DistortionOffset("Distortion Offset", Range(0,1)) = 0.5
+        _DistortionSpeed("Distortion Speed", Range(0.1,1)) = 0.2
+        
         [Header(Frensel)]
-        _EdgeColor("Edge Color", Color) = (1,1,1,1)
         _Multiplier("Multiplier", Float) = 1
         _Ramp("Ramp", float) = 1
     
@@ -49,6 +51,9 @@ Shader "Custom/DistortionArea"
             SAMPLER(_CameraOpaqueTexture);
             half4 _CameraOpaqueTexture_ST;
             
+            float _DistortionOffset;
+            float _DistortionSpeed;
+            
             float _Amplitude;
             float _Frequency;
             
@@ -81,32 +86,33 @@ Shader "Custom/DistortionArea"
                 modifiedPos.y += sin(IN.positionOS.x * _Frequency + _Time.y) * _Amplitude;
                 IN.positionOS = modifiedPos;
                 
-                
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-                
                 OUT.normal = TransformObjectToWorldNormal(IN.normal);
                 OUT.viewDir = TransformViewToWorldDir(IN.positionOS.xyz);
-                
-                
                 OUT.uv = TRANSFORM_TEX(IN.uv, _Texture);
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
-                float2 screen_uv = (IN.positionHCS.xy / _ScreenParams.xy) - 0.5;
+                //Get UV based on screen.
+                float2 screen_uv = (IN.positionHCS.xy / _ScreenParams.xy) - _DistortionOffset;
                 
+                //Warp uv
                 screen_uv = toPolar(screen_uv);
-                screen_uv.x += sin(_Time.x) * screen_uv.y * 1;
+                screen_uv.x += sin(_Time.y * _DistortionSpeed) * screen_uv.y * 1;
 
                 screen_uv = toCartesian(screen_uv);
-                screen_uv += 0.5;
+                screen_uv += _DistortionOffset;
                 
+                //Set cameraTexture based on warped UV
                 half4 color = tex2D(_CameraOpaqueTexture, screen_uv);
                 
-                float frensel = pow(1 + dot(IN.viewDir, IN.normal), _Ramp) * _Multiplier;
-                color -= frensel;
+                //apply distorted fresnel
+                float fresnel = pow(1 + dot(IN.viewDir, IN.normal), _Ramp) * _Multiplier;
+                color -= fresnel;
+                
                 
                 return color * _Color;
             }

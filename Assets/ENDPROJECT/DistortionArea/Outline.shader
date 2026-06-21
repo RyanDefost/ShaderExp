@@ -67,7 +67,6 @@ Shader "Custom/Outline"
 
             half4 frag(Varyings IN) : SV_Target
             {
-                                
                 float2 screen_uv = (IN.positionHCS.xy / _ScreenParams.xy);
                 half4 color = tex2D(_CameraOpaqueTexture, screen_uv);
                 
