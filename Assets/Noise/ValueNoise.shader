@@ -61,6 +61,7 @@ Shader "Custom/ValueNoise"
                 float interpolatorZ = easeOut(frac(value.z));
                 
                 float3 cellNoiseZ[2];
+                [unroll]
                 for (int z = 0; z <= 1; ++z)
                 {
                     float3 cellNoiseY[2];

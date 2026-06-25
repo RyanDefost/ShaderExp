@@ -111,8 +111,10 @@ Shader "Custom/Liquid"
                 float line_intensity = smoothstep(2*pixel_height, pixel_height, Line * bg_line);
                 
                 float4 color = line_intensity * _Color;
-                color -= (_SecondColor * clamp(dist, bg_dist, dist) / 2);
-                color -= (_SecondColor * clamp(bg_dist, dist, bg_dist) / 8);
+                //color -= (_SecondColor * clamp(dist, bg_dist, dist) / 2);
+                
+                color -= _SecondColor * dist;
+                //color -= (_SecondColor * clamp(bg_dist, dist, bg_dist) / 8);
                 color.a = step(0.1, color.a);
                 
                 return float4(color.rgba);
